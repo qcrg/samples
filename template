@@ -1,0 +1,108 @@
+#!/bin/python3
+
+import tarfile
+import os
+import sys
+from shutil import copyfile
+
+default_config = [("PREFIX", "/usr"),
+                  ("DIR_NAME", "templates"),
+                  ("IGNORE", []),
+                  ("USE_TAR", False)]
+use_default_if_not_exist_config = True
+config_file_name = "config"
+share_name = "/share/"
+
+config = dict()
+template_names = []
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
+def update_options():
+    pass
+
+def check_config(config):
+    def check_opt(opt_name):
+        if not opt_name in config:
+            eprint(opt_name + " is not set")
+            exit(1)
+        if len(config[opt_name]) < 1:
+            eprint(opt_name + " is empty")
+            exit(1)
+    check_opt("PREFIX")
+    check_opt("DIR_NAME")
+
+def change_config_types():
+    config["IGNORE"] = config["IGNORE"].split(',')
+    config["USE_TAR"] = bool(config["USE_TAR"])
+
+def update_config():
+    config_file = open(config_file_name, "r")
+    if not config_file:
+        if use_default_if_not_exist_config:
+            return default_config
+        else:
+            eprint("Config file not found")
+            exit(1)
+
+    while True:
+        next_line = config_file.readline()
+        next_line = next_line.strip()
+        if not next_line:
+            break
+        if next_line[0] == '#':
+            continue
+        opt = next_line.split("=")
+        if len(opt) != 2:
+            eprint("Option [{}] is bad, must be [A=B]".format(opt))
+            exit(1)
+        config[opt[0]] = opt[1]
+    change_config_types()
+    check_config(config)
+    return config
+
+def update_template_names():
+    dir_name = config["PREFIX"] + share_name + config["DIR_NAME"]
+    res = []
+    for file in os.listdir(dir_name):
+        path = dir_name + '/' + file
+        if os.path.isfile(path) and tarfile.is_tarfile(path):
+            template_names.append(file)
+
+def create_temp_dir():
+    dir_path = "/tmp/" + config["DIR_NAME"]
+    try:
+        os.mkdir(dir_path)
+    except FileExistsError:
+        pass
+    return dir_path
+
+def copy_all_files(src):
+    pass
+
+def check_template(templ_path):
+    if not (os.path.exists(templ_path) or tarfile.is_tarfile(templ_path)):
+        raise Exception("Template not found: " + sys.argv[1])
+
+def process_behaviour():
+    if len(sys.argv) < 2:
+        print("Template types:")
+        for name in template_names:
+            print("    " + name.replace(".tgz", ''))
+    else:
+        temp_dir = create_temp_dir()
+        templ_path = config["PREFIX"] + share_name + config["DIR_NAME"] + \
+                '/' + sys.argv[1] + ".tgz"
+        check_template(templ_path)
+        tar = tarfile.open(templ_path, "r:gz")
+        tar.extractall()
+        # tar.extractall(temp_dir)
+        # copy_all_files(temp_dir + '/' + sys.argv[1])
+
+
+update_options()
+update_config()
+create_temp_dir()
+update_template_names()
+process_behaviour()
