@@ -1,5 +1,6 @@
 #!/bin/python3
 import os
+import shutil
 
 class FilesInstaller:
     def __init__(self):
@@ -13,7 +14,7 @@ class FilesInstaller:
             self.restore_installed()
 
     def restore_installed(self):
-        for file in installed_files:
+        for file in self.installed_files:
             os.unlink(file)
         for dir_ in reversed(self.installed_dirs):
             os.rmdir(dir_)
@@ -24,11 +25,15 @@ class FilesInstaller:
             self.installed_dirs.append(dst)
         except FileExistsError:
             pass
+        except:
+            self.is_bad = True
+            raise
 
     def install_file(self, src, dst):
         if not self.force and os.path.exists(dst):
-            raise Exception("File exists: " + dst)
-        os.rename(src, dst)
+            self.is_bad = True
+            raise Exception("File exists [{}]".format(dst))
+        shutil.move(src, dst)
         self.installed_files.append(dst)
 
     def install(self, src_dir, dst_dir):
