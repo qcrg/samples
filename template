@@ -109,7 +109,6 @@ def update_config():
         config[opt[0]] = opt[1]
     update_config_types()
     check_config(config)
-    return config
 
 def update_template_names():
     dir_name = config["PREFIX"] + share_name + config["DIR_NAME"]
@@ -147,7 +146,6 @@ def process_behaviour():
             raise Exception("Template is not exists [{}]".format(template_name))
         check_template(templ_path)
         tar = tarfile.open(templ_path, "r:gz")
-        # tar.extractall()
         tar.extractall(temp_dir)
         copy_all_files(temp_dir + '/' + template_name, '.')
 
