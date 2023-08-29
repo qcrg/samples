@@ -1,0 +1,58 @@
+#!/bin/python
+
+import os
+import tarfile
+import shutil
+
+config = dict()
+config_file_name = "config"
+install_path = ""
+
+def check_config(config):
+    def check_opt(opt_name):
+        if not opt_name in config:
+            raise Exception(opt_name + " is not set")
+        if len(config[opt_name]) < 1:
+            raise Exception(opt_name + " is empty")
+    check_opt("PREFIX")
+    check_opt("DIR_NAME")
+
+def update_config_types():
+    config["IGNORE"] = config["IGNORE"].split(',')
+
+def load_config():
+    config_file = open(config_file_name, "r")
+    while True:
+        next_line = config_file.readline()
+        next_line = next_line.strip()
+        if not next_line:
+            break
+        if next_line[0] == '#':
+            continue
+        opt = next_line.split("=")
+        if len(opt) != 2:
+            raise Exception("Option [{}] is bad, must be [A=B]".format(opt))
+        config[opt[0]] = opt[1]
+    update_config_types()
+    check_config(config)
+    global install_path
+    install_path = config["PREFIX"] + "/share/" + config["DIR_NAME"]
+
+def install_templates():
+    def compress(name):
+        tar = tarfile.open(install_path + '/' + name + ".tgz", "w:gz")
+        tar.add(config["DIR_NAME"] + '/' + name)
+    os.makedirs(name=install_path, exist_ok=True)
+    for name in os.listdir(config["DIR_NAME"]):
+        if os.path.isdir(config["DIR_NAME"] + '/' + name):
+            compress(name)
+
+def install_bin():
+    src = "template"
+    dst = config["PREFIX"] + "/bin/template"
+    shutil.copyfile(src, dst)
+    shutil.copymode(src, dst)
+
+load_config()
+install_templates()
+install_bin()
