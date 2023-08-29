@@ -1,4 +1,3 @@
 PREFIX=/usr
 DIR_NAME=templates
 IGNORE=
-USE_TAR=False
