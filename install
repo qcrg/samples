@@ -6,7 +6,8 @@ import shutil
 
 config = dict()
 config_file_name = "config"
-install_path = ""
+templates_install_dir = ""
+templates_dir = "templates"
 
 def check_config(config):
     def check_opt(opt_name):
@@ -35,16 +36,18 @@ def load_config():
         config[opt[0]] = opt[1]
     update_config_types()
     check_config(config)
-    global install_path
-    install_path = config["PREFIX"] + "/share/" + config["DIR_NAME"]
+    global templates_install_dir
+    templates_install_dir = config["PREFIX"] + "/share/" + config["DIR_NAME"]
 
 def install_templates():
     def compress(name):
-        tar = tarfile.open(install_path + '/' + name + ".tgz", "w:gz")
-        tar.add(config["DIR_NAME"] + '/' + name)
-    os.makedirs(name=install_path, exist_ok=True)
-    for name in os.listdir(config["DIR_NAME"]):
-        if os.path.isdir(config["DIR_NAME"] + '/' + name):
+        tar = tarfile.open(templates_install_dir + '/' + name + ".tgz", "w:gz")
+        os.chdir(templates_dir)
+        tar.add(name)
+        os.chdir("..")
+    os.makedirs(name=templates_install_dir, exist_ok=True)
+    for name in os.listdir(templates_dir):
+        if os.path.isdir(templates_dir + '/' + name):
             compress(name)
 
 def install_bin():
