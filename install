@@ -50,6 +50,9 @@ def install_templates():
         if os.path.isdir(templates_dir + '/' + name):
             compress(name)
 
+def install_config():
+    shutil.copyfile("config", "/etc/template.conf")
+
 def install_bin():
     src = "template"
     dst = config["PREFIX"] + "/bin/template"
@@ -58,4 +61,5 @@ def install_bin():
 
 load_config()
 install_templates()
+install_config()
 install_bin()
