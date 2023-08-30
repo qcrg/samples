@@ -14,7 +14,7 @@ HEADER := $(wildcard ${SRC_DIR}/*.hxx)
 OBJ := $(patsubst ${SRC_DIR}%,${BUILD_DIR}%,$(patsubst %.cxx,%.o,${SRC}))
 
 run: build
-	${BIN_PATH}
+	cd ${SRC_DIR} && ${PWD}/${BIN_PATH}
 
 build: ${BUILD_DIR_TARGET} ${BIN_PATH}
 
