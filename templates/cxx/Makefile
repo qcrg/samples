@@ -13,8 +13,10 @@ SRC := $(wildcard ${SRC_DIR}/*.cxx)
 HEADER := $(wildcard ${SRC_DIR}/*.hxx)
 OBJ := $(patsubst ${SRC_DIR}%,${BUILD_DIR}%,$(patsubst %.cxx,%.o,${SRC}))
 
+CXXFLAGS += $(shell pkg-config --cflags --libs ${PKGS})
+
 run: build
-	cd ${SRC_DIR} && ${PWD}/${BIN_PATH}
+	${BIN_PATH}
 
 build: ${BUILD_DIR_TARGET} ${BIN_PATH}
 
@@ -23,7 +25,7 @@ ${BUILD_DIR_TARGET}:
 	touch $@
 
 ${BIN_PATH}: ${OBJ} ${HEADER}
-	${CXX} ${CXXFLAGS} `pkg-config --cflags --libs ${PKGS}` -o $@ ${OBJ}
+	${CXX} ${CXXFLAGS} -o $@ ${OBJ}
 
 ${BUILD_DIR}/%.o: ${SRC_DIR}/%.cxx ${HEADER}
 	${CXX} ${CXXFLAGS} -c -o $@ $<
