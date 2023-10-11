@@ -3,6 +3,7 @@ project(prog)
 
 set(PKG_NAMES )
 set(CXXFLAGS )
+set(BOOST_PKGS )
 
 file(GLOB_RECURSE SRC_LIST src/*.cxx)
 file(GLOB_RECURSE MDLS_LIST src/*.cxxm)
@@ -12,6 +13,12 @@ if (DEFINED PKG_NAMES)
   pkg_check_modules(PKGS REQUIRED $ENV{PKG_NAMES} ${PKG_NAMES})
   include_directories(${PKGS_INCLUDE_DIRS})
   list(APPEND LIBS_LIST ${PKGS_LIBRARIES})
+endif ()
+
+if (DEFINED BOOST_PKGS)
+  find_package(Boost REQUIRED ${BOOST_PKGS})
+  include_directories(${Boost_INCLUDE_DIRS})
+  list(APPEND LIBS_LIST ${Boost_LIBRARIES})
 endif ()
 
 set(CMAKE_CXX_STANDARD 23)
