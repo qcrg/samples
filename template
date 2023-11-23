@@ -5,6 +5,17 @@ import os
 import sys
 import shutil
 
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs);
+
+def print_usage(print_function = print):
+    pf = print_function
+    prog_name = os.path.basename(sys.argv[0])
+    pf("Usage: {} [options] <template type>".format(prog_name))
+    pf("options:")
+    pf("\t -h \t print this page")
+    pf("\t -f \t force instantiation, even if there are files")
+
 class FilesInstaller:
     def __init__(self):
         self.installed_files = []
@@ -67,13 +78,18 @@ def update_options():
     for arg in sys.argv[1:]:
         if arg == "-f":
             installer.force = True
-        elif arg[0] == '-':
+            continue
+        if arg == "-h":
+            print_usage(print)
+            exit(0)
+        if arg[0] == '-':
+            print_usage(eprint)
             raise Exception("Option is undefined [{}]".format(arg))
-        elif template_name != "":
+        if template_name != "":
+            print_usage(eprint)
             raise Exception("Second template name defined [{}, {}]".format(
                 template_name, arg))
-        else:
-            template_name = arg
+        template_name = arg
 
 def check_config(config):
     def check_opt(opt_name):
