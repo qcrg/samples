@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.7)
 project(prog)
 
 set(PKG_NAMES )
-set(CXXFLAGS -Wall -Wextra -Wpedantic)
+set(CXXFLAGS -Wall -Wextra -Wpedantic -ggdb)
 set(BOOST_PKGS )
 
 file(GLOB_RECURSE SRC_LIST src/*.cxx)
