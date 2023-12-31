@@ -12,9 +12,12 @@ def print_usage(print_function = print):
     pf = print_function
     prog_name = os.path.basename(sys.argv[0])
     pf("Usage: {} [options] <template type>".format(prog_name))
+    print("Template types:")
+    for name in template_names:
+        print("    " + name.replace(".tgz", ''))
     pf("options:")
-    pf("\t -h \t print this page")
-    pf("\t -f \t force instantiation, even if there are files")
+    pf("    -h  print this page")
+    pf("    -f  force instantiation, even if there are files")
 
 class FilesInstaller:
     def __init__(self):
@@ -151,9 +154,7 @@ def check_template(templ_path):
 
 def process_behaviour():
     if len(sys.argv) < 2:
-        print("Template types:")
-        for name in template_names:
-            print("    " + name.replace(".tgz", ''))
+        print_usage()
     else:
         temp_dir = create_temp_dir()
         templ_path = config["PREFIX"] + share_name + config["DIR_NAME"] + \
