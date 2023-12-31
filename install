@@ -8,6 +8,7 @@ config = dict()
 config_file_name = "config"
 templates_install_dir = ""
 templates_dir = "templates"
+completion_install_dir = ""
 
 def check_config(config):
     def check_opt(opt_name):
@@ -17,6 +18,7 @@ def check_config(config):
             raise Exception(opt_name + " is empty")
     check_opt("PREFIX")
     check_opt("DIR_NAME")
+    check_opt("COMPLETION_DIR")
 
 def update_config_types():
     config["IGNORE"] = config["IGNORE"].split(',')
@@ -34,32 +36,53 @@ def load_config():
         if len(opt) != 2:
             raise Exception("Option [{}] is bad, must be [A=B]".format(opt))
         config[opt[0]] = opt[1]
+
     update_config_types()
     check_config(config)
+
     global templates_install_dir
+    global completion_install_dir
     templates_install_dir = config["PREFIX"] + "/share/" + config["DIR_NAME"]
+    completion_install_dir = config["COMPLETION_DIR"]
 
 def install_templates():
+    old_cwd = os.getcwd()
     def compress(name):
-        tar = tarfile.open(templates_install_dir + '/' + name + ".tgz", "w:gz")
+        tar_dst = templates_install_dir + '/' + name + ".tgz"
+        tar = tarfile.open(tar_dst, "w:gz")
         os.chdir(templates_dir)
         tar.add(name)
         os.chdir("..")
+        print(tar_dst)
     os.makedirs(name=templates_install_dir, exist_ok=True)
+    print(templates_install_dir)
     for name in os.listdir(templates_dir):
         if os.path.isdir(templates_dir + '/' + name):
             compress(name)
+    os.chdir(old_cwd)
 
 def install_config():
-    shutil.copyfile("config", "/etc/template.conf")
+    dst = config["PREFIX"] + "/etc/pnd_template.conf"
+    shutil.copyfile("config", dst)
+    print(dst)
 
 def install_bin():
     src = "template"
     dst = config["PREFIX"] + "/bin/template"
     shutil.copyfile(src, dst)
     shutil.copymode(src, dst)
+    print(dst)
 
+def install_bash_completion():
+    dst = completion_install_dir + "/pnd_template"
+
+    os.makedirs(name=completion_install_dir,
+                exist_ok=True)
+    shutil.copyfile("etc/bash_completion", dst)
+    print(dst)
+                    
 load_config()
 install_templates()
 install_config()
 install_bin()
+install_bash_completion()

@@ -5,6 +5,22 @@ import os
 import sys
 import shutil
 
+
+default_config = [("PREFIX", "/usr"),
+                  ("DIR_NAME", "templates"),
+                  ("IGNORE", []),
+                  ("COMPLETION_DIR",
+                   "/etc/bash_completion.d")]
+use_default_if_not_exist_config = False
+config_file_paths = ["/etc/pnd_template.conf",
+                     "/usr/local/etc/pnd_template.conf"]
+share_name = "/share/"
+
+config = dict()
+template_names = []
+installer = None
+template_name = str()
+
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs);
 
@@ -64,17 +80,7 @@ class FilesInstaller:
                 dst = dst_dir + '/' + dst_prefix + '/' + file_name
                 self.install_file(src, dst)
 
-default_config = [("PREFIX", "/usr"),
-                  ("DIR_NAME", "templates"),
-                  ("IGNORE", [])]
-use_default_if_not_exist_config = True
-config_file_name = "/etc/template.conf"
-share_name = "/share/"
-
-config = dict()
-template_names = []
 installer = FilesInstaller()
-template_name = str()
 
 def update_options():
     global template_name
@@ -86,7 +92,7 @@ def update_options():
             print_usage(print)
             exit(0)
         if arg[0] == '-':
-            print_usage(eprint)
+            # print_usage(eprint)
             raise Exception("Option is undefined [{}]".format(arg))
         if template_name != "":
             print_usage(eprint)
@@ -102,18 +108,24 @@ def check_config(config):
             raise Exception(opt_name + " is empty")
     check_opt("PREFIX")
     check_opt("DIR_NAME")
+    check_opt("COMPLETION_DIR")
 
 def update_config_types():
     config["IGNORE"] = config["IGNORE"].split(',')
 
+def load_config_file():
+    for name in config_file_paths:
+        try:
+            return open(name, "r")
+        except FileNotFoundError:
+            pass
+
+    if use_default_if_not_exist_config:
+        return default_config
+    raise FileNotFoundError("Config file not found")
+
 def update_config():
-    try:
-        config_file = open(config_file_name, "r")
-    except FileNotFoundError:
-        if use_default_if_not_exist_config:
-            return default_config
-        else:
-            raise FileNotFoundError("Config file not found")
+    config_file = load_config_file()
 
     while True:
         next_line = config_file.readline()
@@ -166,9 +178,15 @@ def process_behaviour():
         tar.extractall(temp_dir)
         copy_all_files(temp_dir + '/' + template_name, '.')
 
+def main():
+    try:
+        update_config()
+        update_template_names()
+        update_options()
+        create_temp_dir()
+        process_behaviour()
+    except Exception as ex:
+        eprint("ERROR:", ex)
 
-update_options()
-update_config()
-create_temp_dir()
-update_template_names()
-process_behaviour()
+
+main()

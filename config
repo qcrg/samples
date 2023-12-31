@@ -1,3 +1,4 @@
-PREFIX=/usr
-DIR_NAME=templates
+PREFIX=/usr/local
+DIR_NAME=pnd_templates
 IGNORE=
+COMPLETION_DIR=/etc/bash_completion.d
