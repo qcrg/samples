@@ -1,7 +1,7 @@
 PY = python
 PYFLAGS = 
 
-run: script.py
+run: main.py
 	${PY} ${PYFLAGS} $^
 
 .PHONY: run
