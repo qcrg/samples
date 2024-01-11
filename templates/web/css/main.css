@@ -1,0 +1,43 @@
+:root {
+  --length: 10;
+  --color-0: #03071E;
+  --color-1: #370617;
+  --color-2: #6A040F;
+  --color-3: #9D0208;
+  --color-4: #D00000;
+  --color-5: #DC2F02;
+  --color-6: #E85D04;
+  --color-7: #F48C06;
+  --color-8: #FAA307;
+  --color-9: #FFBA08;
+  
+  --color-1-other: #101747;
+  --color-2-other: #1a2046;
+}
+
+:root {
+  --primary-color: #f48C06;
+  --additional-color: #03071e;
+  --element-color: #101747;
+  --border-color: color-mix(in srgb, var(--element-color), white 8%);
+}
+
+* {
+  font-family: "Liberation Mono", monospace;
+  font-size: 16px;
+  background-color: var(--additional-color);
+  color: var(--primary-color);
+  user-select: none;
+}
+
+::selection {
+  background-color: var(--primary-color);
+  color: var(--additional-color);
+}
+
+input, button
+{
+  background-color: var(--element-color);
+  border: 2px solid var(--border-color);
+  border-radius: 4px;
+}
