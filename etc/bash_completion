@@ -1,3 +1,22 @@
+_pnd_template_get_installed_templates_count()
+{
+  local DEF_CONFIG_PATH0="/etc/pnd_template.conf"
+  local DEF_CONFIG_PATH1="/usr/local/etc/pnd_template.conf"
+  if [ -f "$DEF_CONFIG_PATH0" ]; then
+    local CONFIG_PATH="$DEF_CONFIG_PATH0"
+  elif [ -f "$DEF_CONFIG_PATH1" ]; then
+    local CONFIG_PATH="$DEF_CONFIG_PATH1"
+  else
+    echo 1>&2 "Config file not found"
+    return 1
+  fi
+
+  source $CONFIG_PATH
+  TEMPS_DIR="${PREFIX}/share/${DIR_NAME}"
+  echo $(ls --color=none -1q "$TEMPS_DIR" | wc -l)
+  # echo $(ls --color=none -1q "$TEMPS_DIR")
+}
+
 _pnd_template_comp_is_flag()
 {
   if [[ $# == 0 ]]
@@ -25,7 +44,9 @@ _pnd_template_completion()
 {
   COMPREPLY=()
   cur="${COMP_WORDS[COMP_CWORD]}"
-  types=$(env template | tail -n+3 | head -n2)
+  # types=( $(_pnd_template_get_installed_template_names) )
+  types=$(env template | tail -n+3 | head -n \
+    $(_pnd_template_get_installed_templates_count))
   flags=$(env template | tail -n2)
 
   if _pnd_template_comp_is_flag $cur
@@ -45,6 +66,7 @@ _pnd_template_completion()
     return 0
   fi
 
+  # COMPREPLY=( $(compgen -W"${types[*]}" -- $cur) )
   COMPREPLY=( $(compgen -W"${types}" -- $cur) )
   return 0
 }

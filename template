@@ -27,7 +27,7 @@ def eprint(*args, **kwargs):
 def print_usage(print_function = print):
     pf = print_function
     prog_name = os.path.basename(sys.argv[0])
-    pf("Usage: {} [options] <template type>".format(prog_name))
+    pf("Usage: {} <template type> [options]".format(prog_name))
     print("Template types:")
     for name in template_names:
         print("    " + name.replace(".tgz", ''))
