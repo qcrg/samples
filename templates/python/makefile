@@ -1,4 +1,4 @@
-PY = python
+PY = python3
 PYFLAGS = 
 
 run: main.py
