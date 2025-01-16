@@ -8,14 +8,14 @@ set(PKGS )
 
 file(GLOB_RECURSE SRC_LIST src/*.cxx)
 
-if (NOT ${PKG_NAMES} STREQUAL "")
+if (NOT "${PKG_NAMES}" STREQUAL "")
   find_package(PkgConfig REQUIRED)
   pkg_check_modules(PKGS REQUIRED $ENV{PKG_NAMES} ${PKG_NAMES})
   include_directories(${PKGS_INCLUDE_DIRS})
   list(APPEND LIBS_LIST ${PKGS_LIBRARIES})
 endif ()
 
-if (NOT ${BOOST_PKGS} STREQUAL "")
+if (NOT "${BOOST_PKGS}" STREQUAL "")
   cmake_policy(SET CMP0167 NEW)
   find_package(Boost REQUIRED ${BOOST_PKGS})
   include_directories(${Boost_INCLUDE_DIRS})
