@@ -4,7 +4,7 @@ project(prog)
 set(CXXFLAGS -Wall -Wextra -Wpedantic -ggdb)
 set(PKG_NAMES )
 set(BOOST_PKGS )
-set(PKGS )
+set(CMAKE_PKGS )
 
 file(GLOB_RECURSE SRC_LIST src/*.cxx)
 
@@ -22,7 +22,7 @@ if (NOT "${BOOST_PKGS}" STREQUAL "")
   list(APPEND LIBS_LIST ${Boost_LIBRARIES})
 endif ()
 
-foreach (PKG IN LISTS PKGS)
+foreach (PKG IN LISTS CMAKE_PKGS)
   find_package(${PKG} REQUIRED)
   include_directories(${${PKG}_INCLUDE_DIRS})
   list(APPEND LIBS_LIST ${${PKG}_LIBRARIES})
