@@ -9,7 +9,7 @@ if (BUILD_TESTS)
   set(INIT_THREADS ON)
 endif ()
 
-set(CXXFLAGS -Wall -Wextra -Wpedantic -ggdb)
+set(CXXFLAGS -Wall -Wextra -Wpedantic -Wconversion -ggdb)
 set(PKG_NAMES )
 set(BOOST_PKGS )
 set(CMAKE_PKGS )
